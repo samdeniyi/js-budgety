@@ -21,7 +21,7 @@ var budgetController = (function () {
             exp:0,
             inc:0
         }
-    }
+    };
 
     return{
         addItem: function (type, des, val) {
@@ -42,10 +42,10 @@ var budgetController = (function () {
             data.allItems[type].push(newItem);
             return newItem;
         },
-        testing : function () {
-            console.log(data.allItems);
+        testing: function () {
+            console.log("Testing Method", data.allItems)
         }
-    }
+    };
 })();
 
 // UI CONTROLLER
@@ -54,16 +54,50 @@ var UIController = (function () {
         inputType : '.add__type',
         inputDescription : '.add__description',
         inputValue : '.add__value',
-        addBtn : '.add__btn'
+        addBtn : '.add__btn',
+        incomeContainer: '.income__list',
+        expensesContainer: '.expenses__list'
     }
     return {
         getInput : function () {
             return {
                 type : document.querySelector(DOMString.inputType).value,
                 description : document.querySelector(DOMString.inputDescription).value,
-                value : document.querySelector(DOMString.inputValue).value,
+                value : parseFloat(document.querySelector(DOMString.inputValue).value),
             }
         },
+
+        addListItem : function (obj, type) {
+            var html, newHtml, element;
+            if(type ==='inc'){
+                element = DOMString.incomeContainer;
+                html='<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"> <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button> </div> </div></div>';
+            }else if(type ==='exp'){
+                element = DOMString.expensesContainer;
+                html='<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            }
+
+            newHtml = html.replace('%id%', obj.id);
+            newHtml = newHtml.replace('%description%', obj.description);
+            newHtml = newHtml.replace('%value%', obj.value);
+
+            document.querySelector(element).insertAdjacentHTML('beforeend', newHtml)
+
+        },
+
+        clearFields: function(){
+            var fields;
+            fields = document.querySelectorAll(DOMString.inputDescription + ', ' + DOMString.inputValue);
+            console.log("fields",fields),
+            fieldArr = Array.prototype.slice.call(fields);
+            console.log("fieldArr",Array),
+            fieldArr.forEach(function (current, index, array) {
+                current.value = "";
+            });
+
+            fieldArr[0].focus();
+        },
+
         getDOMstrings : function () {
             return DOMString;
         }
@@ -83,16 +117,25 @@ var appController = (function (budgetCtrl, UICtrl) {
             }
         });
     };
+    var updateBudget = function () {
+        // 1. cal the budget
+        // 2. Return the buget
+        // 3. Display the budget on the UI
+    };
     var appCtrlAddItem = function () {
         var input, newItem;
         // 1. Get the filled input data
         input = UICtrl.getInput();
-        // 2. Add the item to the budget controller
-        newItem = budgetCtrl.addItem(input.type, input.description, input.value);
-        // 3. Add the item to the UI
-        // 4. Cal budget
-        // 5. Display the budget on the UI
-        budgetCtrl.testing();
+        if(input.description !=="" && !isNaN(input.value) && input.value >0) {
+            // 2. Add the item to the budget controller
+            newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+            // 3. Add the item to the UI
+            UICtrl.addListItem(newItem, input.type);
+            UICtrl.clearFields();
+            // 4. Cal budget
+            // 5. Display the budget on the UI
+            updateBudget();
+        }
     };
 
     return {
