@@ -12,6 +12,15 @@ var budgetController = (function () {
         this.value = value;
     };
 
+    var calculateTotal  = function (type) {
+        var sum = 0;
+        data.allItems[type].forEach(
+            function (value) {
+                sum = sum + cur.value
+            }
+        )
+    };
+
     var data = {
         allItems:{
             exp:[],
@@ -22,6 +31,8 @@ var budgetController = (function () {
             inc:0
         }
     };
+
+
 
     return{
         addItem: function (type, des, val) {
@@ -41,6 +52,11 @@ var budgetController = (function () {
 
             data.allItems[type].push(newItem);
             return newItem;
+        },
+        calculateBudget: function () {
+            // cal total income and expenses
+            // cal the budget:  inc - exp
+            // cal the % of income we spent
         },
         testing: function () {
             console.log("Testing Method", data.allItems)
@@ -119,6 +135,7 @@ var appController = (function (budgetCtrl, UICtrl) {
     };
     var updateBudget = function () {
         // 1. cal the budget
+
         // 2. Return the buget
         // 3. Display the budget on the UI
     };
